@@ -16,6 +16,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.example.inspectorapp.ui.theme.InspectorAppTheme
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -55,7 +57,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun startWork() {
-
+        val request = OneTimeWorkRequest.Builder(AppWorker::class.java).build()
+        val workManager = WorkManager.getInstance(this)
+        workManager.getWorkInfoByIdLiveData(request.id).observe(this) {
+            info("State of ${request.id}: ${it.state}")
+        }
+        workManager.enqueue(request)
     }
 }
 
