@@ -9,13 +9,20 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.coroutineScope
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.example.inspectorapp.ui.theme.InspectorAppTheme
@@ -38,12 +45,24 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun App() {
-        Column(horizontalAlignment = CenterHorizontally) {
-            TextButton(text = "Start Job") {
-                startJob()
-            }
-            TextButton(text = "Start Work") {
-                startWork()
+        val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
+        Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) {
+            Column(
+                horizontalAlignment = CenterHorizontally,
+                modifier = Modifier
+                    .padding(it)
+                    .fillMaxWidth(),
+            ) {
+                TextButton("Start Job") {
+                    startJob()
+                }
+                TextButton("Start Work") {
+                    startWork()
+                }
+
+                TextButton("Network") {
+                    lifecycle.coroutineScope.callUrl(snackbarHostState, "https://reqres.in/api/users")
+                }
             }
         }
     }
